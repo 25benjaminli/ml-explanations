@@ -17,7 +17,7 @@
 % \usepackage{breakurl}
 \usepackage{hyperref}
 \usepackage[margin=1in]{geometry}
-\renewcommand{\baselinestretch}{1.3} 
+\renewcommand{\baselinestretch}{1.5} 
 
 % nicefrac package? 
 % make macro/keybinds to create the matrices/other things
@@ -41,7 +41,7 @@
 
 \section{Introduction}
 
-This document serves as an aggregation of my progress towards gaining a more fundamental understanding of how many modern ML/DL models work. To understand it, an introductory background in linear algebra (matrix operations), calculus (derivatives), and probability is assumed. Corresponding code implementations will be made available in the future, and some helpful references are included for each section. This document is also a bit text-dense so I hope to add some of my diagrams/drawings later. 
+This document serves as an aggregation of my progress towards gaining a more fundamental understanding of how many modern ML/DL models work. I hope it can also serve as helpful pedagogical tool for those interested in learning about the inner workings of these algorithms. An introductory background in linear algebra (matrix operations), calculus (derivatives), and probability is assumed. Corresponding code implementations will be made available in the future, and some helpful references are included for each section. This document is also a bit text-dense so I hope to increase the number of visuals (e.g. diagrams/drawings) with time. 
 
 
 \section{Multilayer Perceptron (Fully-Connected Neural Network)}
@@ -100,7 +100,7 @@ $$Z_i = W * A_{i-1} + B_i$$
 
 so taking the partial derivative with respect to $B_i$ yields $\frac{dZ}{dB_i} = 1$. Therefore, $\frac{dC}{dB_i}$ simplifies to $\delta$! Now, how do we figure out the derivatives with respect to the other weights?? They aren't directly related to the cost function, after all. 
 
-We use the chain rule AGAIN! First, find the derivative of the cost vs. post-activation value for the next layer (layer 2 in our case). 
+We use the chain rule again! First, find the derivative of the cost vs. post-activation value for the next layer (layer 2 in our case). 
 
 $$\frac{dC}{dW_2} = \frac{dC}{dA_3} * \frac{dA_3}{dZ_3} * \frac{dZ_3}{dA_2} * \frac{dA_2}{dZ_2} * \frac{dZ_2}{dW_2}$$
 
@@ -130,7 +130,7 @@ Convolutional Neural Networks (CNNS) have been around for a while, but the first
 
 The convolution layers perform feature extraction. They reduce the spatial size of the data in exchange for increased semantic depth. The FCN works the same as the aforementioned FCN, the only difference being that the input is a feature-dense representation of the data instead of being raw datapoints. Yet, if FCNs are universal function approximators, \textbf{why do we even need CNNs}? The issue is we're living in a world limited in compute power. For example, CNNs have been demonstrated to take orders of magnitude shorter time to reach similar performance compared to fine-tuned FCNs. 
 
-\subsection{Convolution Layers}
+\subsection{Convolutional Layers}
 I mentioned earlier that CNNs reduce the spatial dimensions of the data in exchange for increased semantic depth. What exactly does that mean? 
 
 Each convolution layer consists of many kernels, or filters, each of which is a matrix. Let's say we have input (5, 5). Notice anything interesting? Example: a 5x5 grayscale matrix representing a "0" shape (values closer to 1 are more solid)
@@ -155,10 +155,13 @@ The human eye is very good at recognizing patterns - we can immediately see that
 \end{bmatrix}
 \]
 
-These kernels are applied to data by taking the hadamard (element-wise) product of the original matrix with the filter followed by the sum. If we pass it over an image that's transitioning from dark to light (from top to bottom), the kernel will yield a very low value. This is because dark grayscale values are closer to zero than lighter grayscale values. Conversely, if it's going from light to dark, the kernel will yield a very high value. If it's the same color all the way through, the kernel will yield a value close to zero. This kernel captures \textbf{transitions into and out of horizontal edges}. 
+These kernels are applied to data by taking the hadamard (element-wise) product of the original matrix with the filter followed by the sum. If we pass it over an image that's transitioning from dark to light (from top to bottom), the kernel will yield a very low value. This is because dark grayscale values are closer to zero than lighter grayscale values. Conversely, if it's going from light to dark, the kernel will yield a very high value. If it's the same color all the way through, the kernel will yield a value close to zero. This kernel captures \textbf{transitions into and out of horizontal edges}. How do we find these kernels? For CNNs, they are actually randomly initialized and learned via backpropagation. 
 
-How do we find these kernels? For CNNs, they are actually randomly initialized and learned via backpropagation. In addition to these convolutional operations, pooling operations (e.g. maxpool) are often used. As with many things in deep learning, nobody knows exactly why pooling works so well but experimentally it's quite robust. 
+\subsection{Pooling Layers}
 
+Pooling operations (e.g. maxpool) are often used in tandem with convlayers. As with many things in deep learning, nobody knows exactly why pooling works so well but experimentally it's quite robust. Some theorize that it adds translational invariance (e.g. the max value within a window remains the same even if the features shift slightly) or is a mechanism for regularization.
+
+The idea with pooling is very similar to conv layers - reducing the spatial dimensions of the data. However, something like maxpool actually loses information - selecting the maximum pixel value to represent an entire sliding window. In many cases, this can actually be beneficial if it discards noisy activations in favor of stronger signals. Also, it is preconfigured (i.e. doesn't require any parameters), improving efficiency over using all convolutional operations. 
 
 \subsection{Resources}
 \begin{itemize}
@@ -194,11 +197,11 @@ Here is where the training/inference procedure differs. If it's training, calcul
 Notably, some transformer models have encoders AND decoders, whereas others are only encoders (e.g. BERT) and others are only decoders (e.g. GPT). They differ in use cases, namely that encoder-based models are good for capturing deep semantic information whereas decoder-based models can generate new, realistic output. However, the difference between encoder-only and decoder-only models has been blurring a bit as models from both sides improve their understanding and generation capabilities. 
 
 \subsection{Embedding}
-Coming soon!
+Coming soon
 \subsection{Transformer Block}
-Coming soon!
+Coming soon
 \subsection{Output}
-Coming soon!
+Coming soon
 \subsection{Resources}
 \begin{itemize}
   \item \href{https://arxiv.org/pdf/1706.03762}{Attention Is All You Need (Transformer paper)}

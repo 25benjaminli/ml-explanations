@@ -1,5 +1,3 @@
-I made this repository for the goal of improving my fundamental knowledge of machine learning. Mostly, it's useful to read the [paper](paper/manuscript.pdf) for explanations (best advised to download it so that links are clickable). However, some code samples will be made available as soon as possible. 
+This repository contains an expository [paper](paper/manuscript.pdf) on some common ML/DL approaches (best advised to download it so that links are clickable). I have been writing it to improve my fundamentals, but I hope that it can also be a helpful pedagogical tool for motivated and excited ML learners. Additionally, more code samples will be made available soon. 
 
-Coming soon:
-- RNNs
-- LSTMs
+Please note any suggestions in the issues section of the github repository - I am constantly updating the paper with better descriptions for existing sections, more architectures, and fixing issues/typos. 
