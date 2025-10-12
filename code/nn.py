@@ -13,7 +13,7 @@ def sigmoid_derivative(arr):
 
 class NeuralNet():
 
-  def __init__(self, layer_sizes=[2, 3, 4, 5, 1], lr=0.01):
+  def __init__(self, layer_sizes=[2, 3, 4, 3, 1], lr=0.01):
     self.layer_sizes = layer_sizes # number of neurons per layer. The first value is the input dim
     # our input size is a column vector of length 2. therefore, when we do W1 * input, the columns must equal 2, and so on. 
     self.weights = [
