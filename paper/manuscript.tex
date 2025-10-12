@@ -55,7 +55,7 @@ This document is also a bit text-dense so I hope to increase the number of visua
 
 A Multilayer Perceptron (MLP) AKA fully-connected neural network (FCN) is one of the most fundamental yet powerful algorithms in deep learning. At a high level, each of the \enquote{neurons} in the MLP represents some linear equation $y=mx+b$ with the output going through a nonlinear activation function $\sigma$. Applying a bunch of these operations in sequence enables us to model complex relationships without manually crafting a bunch of \enquote{if statements}. 
 
-The key to creating and leveraging the network is linear algebra and calculus. Let's look at a specific example: we are given 10 soccer players and two pieces of info (\textbf{features}) about their record number of consecutive juggles and weight in kilograms. We want to determine if they're going to be drafted to a soccer team. More formally, we are given a batched input $x$ of dimensions $(b, f)$, where $b$ is the number of entries and $f$ is the number of features - say $(10, 2)$. We are trying to predict a vector $y$ of dimensions $(10, 1)$ where 1 indicates that a player is drafted and 0 indicates they are not drafted. 
+The key to creating and leveraging the network is linear algebra and calculus. Let's look at a specific example: we are given 10 soccer players and two pieces of info (\textbf{features}) about their goals per game and pass accuracy. We want to determine if they're going to be drafted to a soccer team. More formally, we are given a batched input $x$ of dimensions $(b, f)$, where $b$ is the number of entries and $f$ is the number of features - say $(10, 2)$. We are trying to predict a vector $y$ of dimensions $(10, 1)$ where 1 indicates that a player is drafted and 0 indicates they are not drafted. 
 
 \[x=\begin{bmatrix}
 50 & 75 \\
@@ -88,7 +88,7 @@ Note that we first transpose $X$, changing dimensions from (10, 2) $\rightarrow$
 \subsection{Backpropagation}
 Given some output $\hat{y}$, how can we tweak the weights and biases to more accurately predict the ground truth vector $y$? Mathematically, we try to minimize some loss/cost function $C$ with respect to weights and bias values. There are many choices available for $C$ that are good for different kinds of problems. One such loss function is called binary cross-entropy loss - it looks like this:
 
-\[ C = -y * \log{\hat{y}} + (1-y) * \log{(1-\hat{y})} \]
+\[ C = -[y * \log{\hat{y}} + (1-y) * \log{(1-\hat{y})}] \]
 
 Our goal is to calculate $\frac{dC}{dW_i}$ and $\frac{dC}{dB_i}$. This tells us how much cost is affected by the weights from that layer - once we know this information, we can move in the OPPOSITE direction of the gradient by some factor (learning rate, lr) to minimize the cost. In other words, we want to update the weights and bias this way: $W_i = W_i - lr * \frac{dC}{dW_i}$ and $B_i = B_i - lr * \frac{dC}{dB_i}$ (yes, this is programming notation). The first derivative to calculate is from the final weight matrix: $\frac{dC}{dW_3}$, found via the \textbf{chain rule}!
 
@@ -162,7 +162,7 @@ Can you see this? The human eye and brain are very good at recognizing patterns 
 \end{figure}
 
 
-As indicated in Fig. \ref{fig:convolutions}, these kernels are applied to data by taking the hadamard (element-wise) product of the original matrix with the filter followed by the sum. Let's see if we can figure out what this kernel does:
+As indicated in Fig. \ref{fig:convolutions}, these kernels are applied to data by taking the hadamard (element-wise) product of the original matrix with the filter followed by the sum. Then, the kernel "slides over" the entire image by a specified stride length, and the convolution operation is repeated until the entire input has been processed. Let's see if we can figure out what this kernel does:
 \[
 \begin{bmatrix}
 1 & 1 & 1 \\
@@ -243,7 +243,7 @@ Before understanding multi-head attention, it's helpful to grasp \enquote{self-a
 
 Computing the dot products between that row and the columns of $W_q$ give you a vector with each element representing whether the current token is searching for a particular query. Repeat this logic for the key matrix, except this time instead of each column representing a \enquote{search} term it represents some abstract concept (hence \enquote{key}). Finally, find the value matrix $V$, representing information that's actually mixed. The dimensions of $Q$, $K$, $V$ are all $(n \times d_{model})$, $(4 \times 512)$ in our case.
 
-Now that we have these matrices that are supposed to encode information from these tokens, we calculate the \textbf{attention} matrix. We first take the matrix product between $Q$ and $K^T$ - now each entry in the product represents how well a certain token's query aligns with another token's value. Then, divide by the square root of $\sqrt{d_{model}}$. Next, mask the upper triangle of the product (i.e. where $j > i$) to $-\infty$. Because of the autoregressive nature of the transformer, it should not be able to use future words to inform its prediction for the current word. Finally, take the softmax of the product such that all entries along a row/column sum to one. This gives us the \textbf{attention matrix} $A$ with shape $n \times n$ and $4 \times 4$ in our case. 
+Now that we have these matrices that are supposed to encode information from these tokens, we calculate the \textbf{attention} matrix. We first take the matrix product between $Q$ and $K^T$ - now each entry in the product represents how well a certain token's query aligns with another token's value. Then, divide by $\sqrt{d_{model}}$. Next, mask the upper triangle of the product (i.e. where $j > i$) to $-\infty$. Because of the autoregressive nature of the transformer, it should not be able to use future words to inform its prediction for the current word. Finally, take the softmax of the product such that all entries along a row/column sum to one. This gives us the \textbf{attention matrix} $A$ with shape $n \times n$ and $4 \times 4$ in our case. 
 
 This is where the $V$ comes in. We left-multiply $V$ by $A$ to get $O$, the final output of the attention layer. Recall that each row $i$ of A represents the relevance of token $i$ to token $j \forall j<n$. Therefore, by doing this matrix multiplication, each element in a row of $O$ represents how much of token $j$'s value to include $i$'s new token representation. Thus, the final output of an attention layer can be understood as:
 
@@ -251,9 +251,9 @@ This is where the $V$ comes in. We left-multiply $V$ by $A$ to get $O$, the fina
 
 Notably, after all these operations, $O \in \mathbb{R}^{n \times d_{model}}$ retains the same dimensions as the original input $X$, showing how what we did was essentially information across different tokens, up and down-weighting certain embeddings based on their relationships. 
 
-\textbf{Multi-head attention}: in practice, having one giant matrix for each of Q, K, V may \enquote{drown out} niche relationships - like a jack of all trades, master of none. This motivates the creation of multiple specialized attention \enquote{heads}, each of which focuses on a different aspect of language. What this entails is the query, key, value matrices are subdivided according to $n$ heads, retaining dimensions $(n \times d_k)$, where $d_k=d_{model}/n$. Then we calculate \[A_s(Q_s, K_s, V_s)= softmax(\frac{Q_s*K_s^T}{\sqrt{d_k}})V_s, \forall s \in n\]
+\textbf{Multi-head attention}: in practice, having one giant matrix for each of $Q, K, V$ may \enquote{drown out} niche relationships - like a jack of all trades, master of none. This motivates the creation of multiple diverse, specialized attention \enquote{heads}, each of which focuses on a different aspect of language. What this entails is first subdividing the input X into $h$ heads and individually computing query, key, value matrices ($Q_i, K_i, V_i \in \mathbb{R}^{n \times d_{k}} \forall i \in h$), where $d_k=d_{model}/h$. Then we calculate \[A_i(Q_i, K_i, V_i)= softmax(\frac{Q_i*K_i^T}{\sqrt{d_k}})V_i, \forall i \in h\]
 
-Each $A_s \in \mathbb{R}^{n \times d_{k}}$ is concatenated along the second (channel) dimension, producing $Z \in \mathbb{R}^{n \times d_{model}}$. We're not done yet - now that the heads have been concatenated, mixing information across heads could yield valuable results too. We therefore apply a learned matrix $W_O$ which right-multiplies $Z$ to yield $O = ZW_O, O \in \mathbb{R}^{n \times d_{model}}$. This process is what's known as \textbf{\enquote{multi-head attention}}. 
+Each $A_i \in \mathbb{R}^{n \times d_{k}}$ is concatenated along the second (channel) dimension, producing $Z \in \mathbb{R}^{n \times d_{model}}$. We're not done yet - now that the heads have been concatenated, mixing information across heads could yield valuable results too. We therefore apply a learned matrix $W_O$ which right-multiplies $Z$ to yield $O = ZW_O, O \in \mathbb{R}^{n \times d_{model}}$. 
 
 The last step in the transformer block is to apply \textbf{layer normalization} and \textbf{skip connections}. Layer normalization stabilizes training by calculating the standard deviation $\sigma_i$ and mean $\mu_i$ of all the features within each sample in the batch and doing z-score normalization with those statistics \footnote{Recall that in this demo, the batch size was 1 but reasoning can be simply extended to larger batch sizes. See section \ref{sec: embedding} for more info and an example.}. Skip connections allows us to avoid exploding/vanishing gradients. Thus, we compute our final output via $X' = LayerNorm(O + X)$. 
 
@@ -275,7 +275,7 @@ Given the output from the transformer block $X' \in \mathbb{R}^{n \times d_{mode
 $$H = MLP(x) = W_2\sigma(W_1X + b_1) + b_2$$
 
 The important idea here is \(W_1\) projects the input from \((n, d_{model}) \rightarrow (n, d_{mlp})\),
-where \(d_{mlp} \gg d_{model}\). The reason for selecting \(d_{mlp} \gg d_{model}\) is because projecting to a much larger dimensional space allows extraction of richer features. \(W_2\) projects the output back down to our original dimensions \((n, d_{model})\), yielding $H$. 
+where \(d_{mlp} \gg d_{model}\). The reason for selecting \(d_{mlp} \gg d_{model}\) is because projecting to a much larger dimensional space allows extraction of richer features. \(W_2\) projects the output back down to our original dimensions \((n, d_{model})\), yielding $H$. Oftentimes layernorm is also applied after the MLP. 
 
 \subsection{Output}
 

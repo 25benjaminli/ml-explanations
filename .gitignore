@@ -4,9 +4,6 @@
 /paper/manuscript.fls
 /paper/manuscript.synctex.gz
 /paper/manuscript.out
-# /code
-/code/*
-!/code/nn.py
 /temp
 /mlstuff
 /.vscode

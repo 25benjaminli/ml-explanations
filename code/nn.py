@@ -1,9 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
-# reshape to match the output format
-
 def sigmoid(arr):
   return 1 / (1 + np.exp(-1 * arr))
 
@@ -93,19 +90,14 @@ class NeuralNet():
 def get_soccer_problem(n_samples):
   np.random.seed(42)
 
-  goals_per_game = np.random.uniform(0, 3, n_samples)
-  pass_accuracy = np.random.uniform(60, 95, n_samples)
+  goals = np.random.uniform(0, 100, n_samples)
+  pass_accuracy = np.random.uniform(60, 100, n_samples)
 
-  draft_probability = (
-      0.1 +  # base probability
-      0.5 * (goals_per_game > 1) +  # bonus for good scoring
-      0.3 * (pass_accuracy > 75) +    # bonus for good passing
-      0.1 * np.random.normal(0, 1, n_samples)  # random noise
-  )
-
-  draft_probability = np.clip(draft_probability, 0, 1)
-  drafted = (np.random.uniform(0, 1, n_samples) < draft_probability).astype(int)
-  X = np.column_stack([goals_per_game, pass_accuracy])
+  threshold = goals + pass_accuracy + np.random.normal(0, 5, n_samples)  # small noise
+  
+  # drafted if their combined score exceeds 120
+  drafted = (threshold > 120).astype(int)
+  X = np.column_stack([goals, pass_accuracy])
   y = drafted.reshape(-1, 1) # reshape to (100, 1)
 
   plt.figure(figsize=(10, 6))
@@ -115,46 +107,9 @@ def get_soccer_problem(n_samples):
             c='blue', marker='s', label='Drafted', alpha=0.6)
   plt.xlabel('Goals per Game')
   plt.ylabel('Pass Accuracy (%)')
-  plt.title('Soccer Player Draft Status')
+  plt.title('Drafted status')
   plt.legend()
   plt.grid(True, alpha=0.3)
-  plt.savefig("graph.jpg")
-
-  return X, y
-
-def get_separable_data(n_samples):
-  # Simple linearly separable data
-
-  x1 = np.random.uniform(-2, 2, n_samples)
-  x2 = np.random.uniform(-2, 2, n_samples)
-
-  noise = 0.1 * np.random.normal(0, 1, n_samples)
-  decision_value = x1 + x2 + noise
-
-  # Create binary labels
-  drafted = (decision_value > 0).astype(int)
-
-  X = np.column_stack([x1, x2])
-  y = drafted.reshape(-1, 1)
-
-  plt.figure(figsize=(10, 6))
-  plt.scatter(X[y.flatten()==0, 0], X[y.flatten()==0, 1], 
-            c='red', marker='o', label='Not selected', alpha=0.6)
-  plt.scatter(X[y.flatten()==1, 0], X[y.flatten()==1, 1], 
-            c='blue', marker='s', label='Selected', alpha=0.6)
-
-  # Add the decision boundary line
-  x_line = np.linspace(-2, 2, 100)
-  y_line = -x_line  # x1 + x2 = 0 -> x2 = -x1
-  plt.plot(x_line, y_line, 'k--', alpha=0.5, label='Decision Boundary')
-
-  plt.xlabel('Feature 1')
-  plt.ylabel('Feature 2')
-  plt.title('Simple Linearly Separable Data')
-  plt.legend()
-  plt.grid(True, alpha=0.3)
-  plt.xlim(-2.5, 2.5)
-  plt.ylim(-2.5, 2.5)
   plt.savefig("graph.jpg")
 
   return X, y
@@ -169,14 +124,36 @@ if __name__ == "__main__":
 
   nn = NeuralNet(lr=0.001)
 
-  max_iterations = 1000
+  max_iterations = 5000
 
-  X, y = get_separable_data(n_samples=10)
-
+  # X, y = get_separable_data(n_samples=10) # this displays the accuracy of the network better
+  X, y = get_soccer_problem(n_samples=100) # toy problem, very difficult to predict 
+  costs, accuracies = [], []
   for _ in range(max_iterations):
     nn.backprop(X, y) 
     # evaluate the cost
     out = nn.forward(X)
     cost = nn.cost(nn.y_hat, y.T)
     accuracy = get_accuracy(out, y.T)
-    print("cost", cost, "accuracy", accuracy)
+    costs.append(cost)
+    accuracies.append(accuracy)
+
+  # plot the costs and accuracies
+  plt.figure(figsize=(12, 5))
+  plt.subplot(1, 2, 1)
+  plt.plot(costs, label='Cost', color='blue')
+  plt.xlabel('Iteration')
+  plt.ylabel('Cost')
+  plt.title('Cost over Iterations')
+  plt.legend()
+  plt.grid(True)
+  plt.subplot(1, 2, 2)
+  plt.plot(accuracies, label='Accuracy', color='green')
+  plt.xlabel('Iteration')
+  plt.ylabel('Accuracy')
+  plt.title('Accuracy over Iterations')
+  plt.legend()
+  plt.grid(True)
+  plt.tight_layout()
+  # plt.savefig("training_progress.jpg")
+  plt.show()
