@@ -55,7 +55,7 @@ This document is also a bit text-dense so I hope to increase the number of visua
 
 A Multilayer Perceptron (MLP) AKA fully-connected neural network (FCN) is one of the most fundamental yet powerful algorithms in deep learning. At a high level, each of the \enquote{neurons} in the MLP represents some linear equation $y=mx+b$ with the output going through a nonlinear activation function $\sigma$. Applying a bunch of these operations in sequence enables us to model complex relationships without manually crafting a bunch of \enquote{if statements}. 
 
-The key to creating and leveraging the network is linear algebra and calculus. Let's look at a specific example: we are given 10 soccer players and two pieces of info (\textbf{features}) about their goals per game and pass accuracy. We want to determine if they're going to be drafted to a soccer team. More formally, we are given a batched input $x$ of dimensions $(b, f)$, where $b$ is the number of entries and $f$ is the number of features - say $(10, 2)$. We are trying to predict a vector $y$ of dimensions $(10, 1)$ where 1 indicates that a player is drafted and 0 indicates they are not drafted. 
+The key to creating and leveraging the network is linear algebra and calculus. Looking at a specific example, we are given 10 soccer players and two pieces of info (\textbf{features}) about their goals per game and pass accuracy. We want to determine if they're going to be drafted to a soccer team. More formally, we are given a batched input $x$ of dimensions $(b, f)$, where $b$ is the number of entries and $f$ is the number of features - say $(10, 2)$. We are trying to predict a vector $y$ of dimensions $(10, 1)$ where 1 indicates that a player is drafted and 0 indicates they are not drafted. 
 
 \[x=\begin{bmatrix}
 50 & 75 \\
@@ -79,7 +79,7 @@ To do this, we construct a neural network consisting of multiple \textbf{layers}
 Each layer $i$ calculates the following:
 \[A_i = \sigma(W_i * A_{i-1} + B_i)\]
 
-where $A_i$ is the \enquote{activated} output of the layer, $W_i$ is a weight matrix, $B_i$ is the bias matrix, and $\sigma$ is some activation function (e.g. sigmoid, relu) that introduces non-linearity. The intuition is that the weight matrices will automatically learn how to extract meaningful features from the data. However, we'll also need the \textbf{unactivated} output later for backpropagation: $Z_i = W_i * A_{i-1} + B_i$. We randomly initialize weight matrices with dimensions $(n_{i}, n_{i-1})$ and bias matrices of dimensions $(n_{i}, b)$. To understand why these dimensions are used, let's look at what happens after we pass through the \textbf{first} hidden layer of the network. We treat the original input X as the precursor activated value since there doesn't exist at this point. 
+where $A_i$ is the \enquote{activated} output of the layer, $W_i$ is a weight matrix, $B_i$ is the bias matrix, and $\sigma$ is some activation function (e.g. sigmoid, relu) that introduces non-linearity. The intuition is that the weight matrices will automatically learn how to extract meaningful features from the data. However, we'll also need the \textbf{unactivated} output later for backpropagation: $Z_i = W_i * A_{i-1} + B_i$. We randomly initialize weight matrices with dimensions $(n_{i}, n_{i-1})$ and bias matrices of dimensions $(n_{i}, b)$. To understand why these dimensions are used, consider what happens after a pass through the \textbf{first} hidden layer of the network. We treat the original input X as the precursor activated value since there doesn't exist at this point. 
 
 \[A_1 = \sigma(W_1 * X^T + B_1)\]
 
@@ -140,7 +140,7 @@ Convolutional Neural Networks (CNNS) have been around for a while, but the first
 The convolution layers perform feature extraction, reducing the spatial size of the data in exchange for increased semantic depth. The MLP works the same as the aforementioned MLP, the only difference being that the input is a feature-dense representation of the original image data instead of being raw pixel values. The MLP's role is to output ten neurons, each indicating the network's \enquote{confidence} that the provided image represents the corresponding number from 0-9. 
 
 \subsection{Convolutional Layers}
-When we say CNNs reduce the spatial dimensions of the data in exchange for increased semantic depth, what exactly does that mean? Each convolution layer consists of many kernels, or filters, each of which is a matrix. Let's say we have a $5 \times 5$ grayscale matrix representing a \enquote{0} shape (values closer to 1 are more solid).  
+When we say CNNs reduce the spatial dimensions of the data in exchange for increased semantic depth, what exactly does that mean? Each convolution layer consists of many kernels, or filters, each of which is a matrix. Consider this $5 \times 5$ grayscale matrix representing a \enquote{0} shape (values closer to 1 are more solid).  
 
 \[
 \begin{bmatrix}
@@ -152,7 +152,7 @@ When we say CNNs reduce the spatial dimensions of the data in exchange for incre
 \end{bmatrix}
 \]
 
-Can you see this? The human eye and brain are very good at recognizing patterns - we can immediately see that the values close to 1 form a 0 shape. But how is a computer supposed to grasp that concept? The key is applying KERNELS. 
+Can you see this? The human eye and brain are very good at recognizing patterns - we can immediately see that the values close to 1 form a 0 shape. But how is a computer supposed to grasp that concept? The key is applying \textbf{kernels}. 
 
 \begin{figure}[H]
     \centering
@@ -162,7 +162,7 @@ Can you see this? The human eye and brain are very good at recognizing patterns 
 \end{figure}
 
 
-As indicated in Fig. \ref{fig:convolutions}, these kernels are applied to data by taking the hadamard (element-wise) product of the original matrix with the filter followed by the sum. Then, the kernel "slides over" the entire image by a specified stride length, and the convolution operation is repeated until the entire input has been processed. Let's see if we can figure out what this kernel does:
+As indicated in Fig. \ref{fig:convolutions}, these kernels are applied to data by taking the hadamard (element-wise) product of the original matrix with the filter followed by the sum. Then, the kernel "slides over" the entire image by a specified stride length, and the convolution operation is repeated until the entire input has been processed. Let's determine what this kernel does:
 \[
 \begin{bmatrix}
 1 & 1 & 1 \\
@@ -171,9 +171,9 @@ As indicated in Fig. \ref{fig:convolutions}, these kernels are applied to data b
 \end{bmatrix}
 \]
 
-If we pass it over an image that's transitioning from dark to light (from top to bottom), the kernel will yield a very low value. This is because dark grayscale values are closer to zero than lighter grayscale values. Conversely, if it's going from light to dark, the kernel will yield a very high value. If it's the same color all the way through, the kernel will yield a value close to zero. This kernel captures \textbf{transitions into and out of horizontal edges}. 
+Passing it over an image that's transitioning from dark to light (from top to bottom), the kernel will yield a very low value. This is because dark grayscale values are closer to zero than lighter grayscale values. Conversely, if it's going from light to dark, the kernel will yield a very high value. If it's the same color all the way through, the kernel will yield a value close to zero. This kernel captures \textbf{transitions into and out of horizontal edges}. 
 
-This is the key: in exchange for reducing the dimensionality of a 3x3 patch to 1x1, we have extracted information about whether that region represents an edge. Because we have many different kernels, we can extract many types of features otherwise impossible for the machine to discern. As for how these kernels are found - they are actually randomly initialized and learned via backpropagation. 
+This is the key: in exchange for reducing the dimensionality of a 3x3 patch to 1x1, we have extracted information about whether that region represents an edge. With many different kernels, all sorts of abstract features can be extracted. As for how these kernels are found, they are actually randomly initialized and learned via backpropagation. 
 
 \subsection{Pooling Layers}
 
@@ -223,9 +223,9 @@ Transformers are typically composed of three parts:
 Given some sentence, such as \enquote{What is your name}, we first convert the sentence into tokens (i.e. vectors) such that each word maps to a unique token - a process called tokenization. For the English language, tokenization can be understood relatively simply as selecting each word and converting it into a vector representation. Notably, however, tokenization is still an open problem. Not all languages are tokenized equally - 
 Burmese or Amharic may take up to 10x tokens to represent an equivalent message in English, as described in \href{https://medium.com/data-science/all-languages-are-not-created-tokenized-equal-cd87694a97c1}{this post}. This may lead to biased model performance for languages with patterns similar to English. 
 
-As illustrated in the diagram above, let's say we have an array of words of length 4: [\enquote{What}, \enquote{is}, \enquote{your}, \enquote{name}], which for simplicity has been cleaned from punctuation and extraneous characters\footnote{What is \enquote{filtered out} depends on the specific tokenization strategy.}. For the purposes of conciseness, the batch size is assumed to be 1 but calculations can be simply made valid by broadcasting matrices to match dimensions. For example: instead of $(4 \times 512) * (512 \times 512) \rightarrow (4 \times 512)$, for batch size 3 we broadcast $(512 \times 512) \rightarrow (3 \times 512 \times 512)$. Thus, we get $(3 \times 4 \times 512) * (3 \times 512 \times 512) \rightarrow (3 \times 4 \times 512)$.
+As illustrated in the diagram above, we're given an array of words of length 4: [\enquote{What}, \enquote{is}, \enquote{your}, \enquote{name}], which for simplicity has been cleaned from punctuation and extraneous characters\footnote{What is \enquote{filtered out} depends on the specific tokenization strategy.}. For the purposes of conciseness, the batch size is assumed to be 1 but calculations can be simply made valid by broadcasting matrices to match dimensions. For example: instead of $(4 \times 512) * (512 \times 512) \rightarrow (4 \times 512)$, for batch size 3 we broadcast $(512 \times 512) \rightarrow (3 \times 512 \times 512)$. Thus, we get $(3 \times 4 \times 512) * (3 \times 512 \times 512) \rightarrow (3 \times 4 \times 512)$.
 
-We want to convert each word in the array to $v \in \mathbb{R}^{d_{model}}$, where $d_{model}$ is the model depth and is $512$ in \enquote{Attention is All You Need} - the original transformer paper. Intuitively, it can be understood as how many concepts the model is able to compare between different tokens. The classical example is to take the embeddings of some words and perform operations such as $king-man+woman\approx queen$. A single index within a 512-D embedding doesn't mean much, but it does when taken together with everything else. Because these representations are so abstract, we still don't have a reliable way of mapping embeddings to concepts and vice versa\footnote{For more info, I recommend looking into the field of mechanistic interpretability starting with Anthropic's paper \href{https://transformer-circuits.pub/2023/monosemantic-features}{towards monosemanticity} - some really interesting stuff}. Positional encoding is then added to each vector word embedding, producing vectors of the same dimensions but allowing the model to understand the position of tokens relative to each other. With our four-word example, we obtain a $4 \times 512$ matrix as final output and refer to this as $X$. The positional encoding encoding can be deterministic via sinusoidal initialization (as in the original \enquote{Attention is All You Need} paper) or learned, as in some future papers. 
+We want to convert each word in the array to $v \in \mathbb{R}^{d_{model}}$, where $d_{model}$ is the model depth and is $512$ in \enquote{Attention is All You Need} - the original transformer paper. Intuitively, it can be understood as how many concepts the model is able to compare between different tokens. The classical example is to take the embeddings of some words and perform operations such as $king-man+woman\approx queen$. A single index within a 512-D embedding doesn't mean much, but it does when taken together with everything else. Because these representations are so abstract, we still don't have a reliable way of mapping embeddings to concepts and vice versa\footnote{For more info, I recommend looking into the field of mechanistic interpretability starting with Anthropic's paper \href{https://transformer-circuits.pub/2023/monosemantic-features}{towards monosemanticity} - a very interesting subject}. Positional encoding is then added to each vector word embedding, producing vectors of the same dimensions but allowing the model to understand the position of tokens relative to each other. With our four-word example, we obtain a $4 \times 512$ matrix as final output and refer to this as $X$. The positional encoding encoding can be deterministic via sinusoidal initialization (as in the original \enquote{Attention is All You Need} paper) or learned, as in some future papers. 
 
 \subsection{Transformer Block}
 
@@ -235,7 +235,7 @@ The goal of the transformer block is to mix meaningful information across embedd
 
 Before understanding multi-head attention, it's helpful to grasp \enquote{self-attention}. The goal of both types of attention is to generate a refined representation of our embeddings such that they incorporate relevant information from embeddings around them. 
 
-\textbf{Self-attention}: we begin by creating three learnable weight matrices: $W_Q$, $W_K$, $W_V$, each dimensions $d_{model}$ for query, key, value respectively. Then, right-multiply $X$ by each of these matrices, creating three resulting matrices of the same dimensions $Q$, $K$, $V$. To understand what these matrices represent, I found it helpful to frame matrix multiplication as the dot product between every row in $X$ (i.e. token) and every column in $W$. Recall that the dot product between two vectors encodes similarity (i.e. high value = similar, low value = dissimilar). With this in mind, let's look at the query matrix $W_q$. Think of each column of $W_q$ as encoding some \enquote{search term}. Select an arbitrary row in the matrix $X$, say the first row. 
+\textbf{Self-attention}: we begin by creating three learnable weight matrices: $W_Q$, $W_K$, $W_V$, each dimensions $d_{model}$ for query, key, value respectively. Then, right-multiply $X$ by each of these matrices, creating three resulting matrices of the same dimensions $Q$, $K$, $V$. To understand what these matrices represent, I found it helpful to frame matrix multiplication as the dot product between every row in $X$ (i.e. token) and every column in $W$. Recall that the dot product between two vectors encodes similarity (i.e. high value = similar, low value = dissimilar). With this in mind, look at the query matrix $W_q$ and consider each column of $W_q$ as encoding some \enquote{search term}. Select an arbitrary row in the matrix $X$, say the first row. 
 
 \[x_1 = \begin{bmatrix}
 0.21 & 0.44 & ... & -0.08
@@ -301,6 +301,84 @@ Notably, some transformer models have encoders AND decoders, whereas others are 
   
 \end{itemize}
 
+\section{Uncertainty Quantification (UQ)}
+It's desirable to quantify uncertainty in a model's predictions especially in high-stakes environments (e.g. healthcare diagnostics, autonomous driving, financial forecasting). Uncertainty can be classified into two categories:
+\begin{enumerate}
+  \item \textbf{Aleatoric}: arising from inherent randomness in systems and cannot be reduced.
+  \item \textbf{Epistemic}: arising from data limitations and/or ill-defined model and can be reduced. 
+\end{enumerate}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\textwidth]{../media/aleatoric_epistemic.png}
+  \caption{Aleatoric vs. Epistemic Uncertainty}
+  \label{fig:aleatoric_epistemic}
+\end{figure}
+
+Thus, it's not enough to have simply one estimate of "uncertainty". Differentiating between these two forms of uncertainty is important for decision-making and also for developers to know how to improve their approaches. There exist various UQ approaches that each take unique approaches to capturing uncertainty.  
+
+\subsection{Bayesian}
+
+Traditional neural networks have point estimates for model weights. Bayesian approaches attempt to assign a distribution $p(\theta \mid D)$ where $D$ is the dataset - this is the \textbf{posterior} (can be computed via methods such as variational inference), modeled by:
+
+\[
+p(\theta \mid D) = \frac{p(D \mid \theta) \cdot p(\theta)}{p(D)}
+\]
+
+Interpret $p(\theta \mid D)$ the probability density function of parameters over the dataset $D$, thus whenever you sample from it you get a new set of parameters $\theta_s$. Turns out computing the exact posterior is computationally intractable due to the \textbf{marginal likelihood} $$\int p(D | w) p(w) \ dw$$
+
+Here, integrating the likelihood $p(D \mid \theta)$ over all possible $\theta$ is very difficult because it needs a full pass through the dataset (computing $\prod p(y_i \mid x_i)$ through standard forward pass) for each possible value of $\theta$. To avoid computing the entire posterior we can approximate it via variational inference - use simpler $q(\theta \mid \phi)$ and minimize the KL divergence with respect to the original intractable marginal likelihood. 
+
+$$KL(q(\theta \mid \phi) \mid \mid P(\theta \mid D)) = \int q(\theta \mid \phi) \cdot \log{\frac{q(\theta \mid \phi)}{P(\theta \mid D)}}$$
+
+Because this still contains the intractable $P(\theta \mid D)$, we can use a trick and end up maximizing this other objective ELBO (Evidence Lower Bound). $ELBO(\phi) = \mathbb{E}_q [\log P(D \mid \theta)] - KL(q(\theta \mid \phi) \mid \mid P(\theta))$. Intuitively, the first part is asking for the expected value under distribution $q$. Sample a bunch of $\theta$ from $q$, calculate the log likelihood for each, and take the average of all those values. Parameters that better fit the data will increase the value of this term. The second part (KL divergence between q distribution and prior) prevents the new estimate from straying too far away from the prior. 
+
+Notably, variational inference requires storing double the parameters (mean AND variance) since those are optimized via:
+
+\begin{align*}
+ELBO(\phi) &= \mathbb{E}_q [\log P(D \mid \theta)] - KL(q(\theta \mid \phi) \mid \mid P(\theta))
+\\ 
+\mu &= \mu + lr * \nabla_\mu ELBO
+\\
+\sigma &= \sigma + lr * \nabla_\sigma ELBO
+\end{align*}
+
+Once the posterior is approximated, sample weights and run the network over the data to produce different outputs. The outputs form another distribution, from which you can conduct analysis such as constructing "credible" intervals. 
+
+Another strategy for bayesian-like estimations is using dropout during training, keeping it on during inference, and constructing a distribution of possible results. But this is not a bayesian neural net in the traditional sense. 
+
+Bayesian neural nets have a few advantages and disadvantages. They works well with smaller datasets due to preventing significant drift from the prior. Secondly, they model epistemic uncertainty by calculating metrics based off different model parameters (and can be modified to capture aleatoric uncertainty as well). However, they are still slow... especially during inference and because of two extra parameters to optimize. 
+
+\subsection{Conformal Prediction}
+
+Conformal prediction enables distribution-free estimation of uncertainty via calibrating models to produce outcomes with certain coverage guarantees. For instance, a neural network might have three outputs: 2.5th quantile (i.e. it thinks the ground truth will fall below this value 2.5 percent of the time), 50th quantile ("median" image), and 97.5th quantile (ground truth will fall below 97.5 percent of the time). This model might be trained with something like pinball loss:
+
+\[
+L_\tau(y, \hat{y}) = \begin{cases}
+\tau(y - \hat{y}) & \text{if } y \geq \hat{y} \\
+(1-\tau)(\hat{y} - y) & \text{if } y < \hat{y}
+\end{cases}
+\]
+
+where $\tau$ is the desired quantile. This loss penalizes over and underestimation depending on the quantile and can be visualized as such:
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{../media/pinball.png}
+  \caption{Pinball loss. Observe that for higher quantiles, overprediction (negative prediction error) leads to higher loss and this is opposite for lower quantiles. }
+  \label{fig:pinball}
+\end{figure}
+
+However, it's not sufficient to just train a model with this loss. Because it's a stochastic process, there are no statistical guarantees. This means we hold out a calibration set (separate from train and test sets). The calibration set is used to scale and refine the prediction intervals such that the average error over the data remains below a permitted threshold. 
+
+\subsection{Resources}
+
+\begin{itemize}
+  \item \href{https://arxiv.org/pdf/2402.19460}{Benchmarking Uncertainty Disentanglement: Specialized Uncertainties for Specialized Tasks}
+  \item \href{https://www.cs.toronto.edu/~duvenaud/distill_bayes_net/public/}{Bayesian NN deep dive}
+  \item \href{https://towardsdatascience.com/conformal-prediction-for-machine-learning-classification-from-the-ground-up-a12fcf6860d0/}{Conformal prediction hands-on code}
+\end{itemize}
+
 \section{Training Models}
 
 \subsection{LMs: Reinforcement Learning with Human Feedback (RLHF)}
@@ -332,9 +410,9 @@ Next, use a reward model $r_{\phi}$ (perhaps just a transformer an added linear 
 \[L_{reward} = -\logp{\sigp{r_{\phi}(y_w) - r_{\phi}(y_l)}}\]. This encourages the maximization of the reward for the good response while minimizing the reward for the bad response. 
 
 \subsubsection{KL Divergence Calculation + PPO update}
-Now, we have a trained reward model. Let's freeze the weights of the original LM ($\pi_{ref}$) make a trainable copy of the original LM and call it $\pi_{\phi}$ (this will be the final fine-tuned LM after the entire process is complete). 
+Now, we have a trained reward model. Freeze the weights of the original LM ($\pi_{ref}$) make a trainable copy of the original LM and call it $\pi_{\phi}$ (this will be the final fine-tuned LM after the entire process is complete). 
 
-We need to prevent $\pi_{\phi}$ from \enquote{reward hacking} (i.e. giving nonsensical outputs to fool the reward model), so we calculate KL divergence between outputs of $\pi_{\phi}$ and $\pi_{ref}$. This is given as $KL = \beta\logp{\frac{\pi_{\phi}(y|x)}{\pi_{ref}(y|x)}}$. The further $\pi_{\phi}(y|x)$ is from $\pi_{ref}(y|x)$, the greater the KL divergence. 
+To prevent $\pi_{\phi}$ from \enquote{reward hacking} (i.e. giving nonsensical outputs to fool the reward model), calculate KL divergence between outputs of $\pi_{\phi}$ and $\pi_{ref}$. This is given as $KL = \beta\logp{\frac{\pi_{\phi}(y|x)}{\pi_{ref}(y|x)}}$. The further $\pi_{\phi}(y|x)$ is from $\pi_{ref}(y|x)$, the greater the KL divergence. 
 
 To update the new LM $\pi_{\phi}$, calculate 
 
@@ -367,6 +445,7 @@ The authors argue that the intuition for why this approach works so well is beca
     \item \href{https://arxiv.org/pdf/2305.18290}{Direct Preference Optimization: Your Language Model is Secretly a Reward Model}
 \end{itemize}
 
-% \listoffigures
+
+\listoffigures
 
 \end{document}

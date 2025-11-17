@@ -14,9 +14,13 @@
 \contentsline {subsubsection}{\numberline {4.2.2}MLP Layer}{18}{subsubsection.4.2.2}%
 \contentsline {subsection}{\numberline {4.3}Output}{19}{subsection.4.3}%
 \contentsline {subsection}{\numberline {4.4}Resources}{19}{subsection.4.4}%
-\contentsline {section}{\numberline {5}Training Models}{20}{section.5}%
-\contentsline {subsection}{\numberline {5.1}LMs: Reinforcement Learning with Human Feedback (RLHF)}{20}{subsection.5.1}%
-\contentsline {subsubsection}{\numberline {5.1.1}Reward Model}{21}{subsubsection.5.1.1}%
-\contentsline {subsubsection}{\numberline {5.1.2}KL Divergence Calculation + PPO update}{21}{subsubsection.5.1.2}%
-\contentsline {subsection}{\numberline {5.2}LMs: Direct Preference Optimization (DPO)}{22}{subsection.5.2}%
+\contentsline {section}{\numberline {5}Uncertainty Quantification (UQ)}{20}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Bayesian}{20}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Conformal Prediction}{22}{subsection.5.2}%
 \contentsline {subsection}{\numberline {5.3}Resources}{23}{subsection.5.3}%
+\contentsline {section}{\numberline {6}Training Models}{24}{section.6}%
+\contentsline {subsection}{\numberline {6.1}LMs: Reinforcement Learning with Human Feedback (RLHF)}{24}{subsection.6.1}%
+\contentsline {subsubsection}{\numberline {6.1.1}Reward Model}{25}{subsubsection.6.1.1}%
+\contentsline {subsubsection}{\numberline {6.1.2}KL Divergence Calculation + PPO update}{25}{subsubsection.6.1.2}%
+\contentsline {subsection}{\numberline {6.2}LMs: Direct Preference Optimization (DPO)}{26}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Resources}{27}{subsection.6.3}%
