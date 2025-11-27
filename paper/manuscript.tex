@@ -227,6 +227,25 @@ As illustrated in the diagram above, we're given an array of words of length 4: 
 
 We want to convert each word in the array to $v \in \mathbb{R}^{d_{model}}$, where $d_{model}$ is the model depth and is $512$ in \enquote{Attention is All You Need} - the original transformer paper. Intuitively, it can be understood as how many concepts the model is able to compare between different tokens. The classical example is to take the embeddings of some words and perform operations such as $king-man+woman\approx queen$. A single index within a 512-D embedding doesn't mean much, but it does when taken together with everything else. Because these representations are so abstract, we still don't have a reliable way of mapping embeddings to concepts and vice versa\footnote{For more info, I recommend looking into the field of mechanistic interpretability starting with Anthropic's paper \href{https://transformer-circuits.pub/2023/monosemantic-features}{towards monosemanticity} - a very interesting subject}. Positional encoding is then added to each vector word embedding, producing vectors of the same dimensions but allowing the model to understand the position of tokens relative to each other. With our four-word example, we obtain a $4 \times 512$ matrix as final output and refer to this as $X$. The positional encoding encoding can be deterministic via sinusoidal initialization (as in the original \enquote{Attention is All You Need} paper) or learned, as in some future papers. 
 
+Sinusoidal embeddings are valued as such:
+
+\begin{align*}
+  PE_{(pos,2i)} = \sin{(\frac{pos}{10000^{\frac{2i}{d}}})}
+  \\
+  PE_{(pos,2i+1)} = \cos{(\frac{pos}{10000^{\frac{2i}{d}}})}
+\end{align*}
+
+Where $pos$ represents the index of the token in the sequence, $i$ is the position in the embedding vector, $d$ is the total embedding dimension. 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{../media/sinusoidal.png}
+  \caption{Sinusoidal embeddings. \href{https://learnopencv.com/sinusoidal-position-embeddings/}{Credit for this illustration}}
+  \label{fig:sinusoidal}
+\end{figure}
+
+Above is a visualization of sinusoidal embeddings for a sentence. Each line traces the value of a selected dimension in the embedding vector of a particular word (only 8 dimensions are shown here but in practice there are a lot more) as you progress through the sentence.  
+
 \subsection{Transformer Block}
 
 The goal of the transformer block is to mix meaningful information across embeddings and sharpen their in-context meaning. There are two parts of each transformer block: multi-head attention and MLP layer. 
@@ -311,7 +330,7 @@ It's desirable to quantify uncertainty in a model's predictions especially in hi
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.6\textwidth]{../media/aleatoric_epistemic.png}
-  \caption{Aleatoric vs. Epistemic Uncertainty}
+  \caption{Aleatoric vs. Epistemic Uncertainty. \href{https://commons.wikimedia.org/wiki/File:An-illustration-of-the-difference-between-aleatoric-and-epistemic-uncertainties-The-dots.png}{Credit for this illustration}}
   \label{fig:aleatoric_epistemic}
 \end{figure}
 
@@ -325,7 +344,7 @@ Traditional neural networks have point estimates for model weights. Bayesian app
 p(\theta \mid D) = \frac{p(D \mid \theta) \cdot p(\theta)}{p(D)}
 \]
 
-Interpret $p(\theta \mid D)$ the probability density function of parameters over the dataset $D$, thus whenever you sample from it you get a new set of parameters $\theta_s$. Turns out computing the exact posterior is computationally intractable due to the \textbf{marginal likelihood} $$\int p(D | w) p(w) \ dw$$
+Interpret $p(\theta \mid D)$ the probability density function of parameters over the dataset $D$, thus whenever you sample from it you get a new set of parameters $\theta_s$. Turns out computing the exact posterior is computationally intractable due to the \textbf{marginal likelihood} $$P(D) = \int p(D | \theta) p(\theta) \ d\theta$$
 
 Here, integrating the likelihood $p(D \mid \theta)$ over all possible $\theta$ is very difficult because it needs a full pass through the dataset (computing $\prod p(y_i \mid x_i)$ through standard forward pass) for each possible value of $\theta$. To avoid computing the entire posterior we can approximate it via variational inference - use simpler $q(\theta \mid \phi)$ and minimize the KL divergence with respect to the original intractable marginal likelihood. 
 
@@ -369,7 +388,7 @@ where $\tau$ is the desired quantile. This loss penalizes over and underestimati
   \label{fig:pinball}
 \end{figure}
 
-However, it's not sufficient to just train a model with this loss. Because it's a stochastic process, there are no statistical guarantees. This means we hold out a calibration set (separate from train and test sets). The calibration set is used to scale and refine the prediction intervals such that the average error over the data remains below a permitted threshold. 
+However, it's not sufficient to just train a model with this loss. Because it's a stochastic process, there are no statistical guarantees. This means we hold out a calibration set (separate from train and test sets). The calibration set is used to scale and refine the prediction intervals such that the average error over the data remains below a permitted threshold. You might, for instance, scale the upper and lower bounds such that they guarantee that a prediction is contained between them 95\% of the time. 
 
 \subsection{Resources}
 
